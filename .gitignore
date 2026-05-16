@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+env/
+venv/
+output/images/*.jpg
+output/images/*.png
+data/posts.json

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime AI Engine Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0f0c29;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --neon-blue: #00e5ff;
+            --neon-purple: #b537f2;
+            --text-color: #ffffff;
+            --text-muted: #a0a0b0;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color), #302b63, #24243e);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 2rem;
+            background-attachment: fixed;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h2 { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--neon-blue); }
+
+        .btn-run {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(181, 55, 242, 0.4);
+        }
+
+        .loader {
+            display: none;
+            color: var(--neon-blue);
+            font-weight: bold;
+            font-size: 1.1rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-purple);
+        }
+
+        .post-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-bottom: 1px solid var(--glass-border);
+            background-color: #1a1a2e;
+        }
+
+        .post-content { padding: 1.5rem; }
+        .post-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 0.8rem; line-height: 1.4;}
+        .post-caption {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            white-space: pre-wrap;
+            line-height: 1.5;
+            max-height: 120px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Custom scrollbar for caption */
+        .post-caption::-webkit-scrollbar { width: 4px; }
+        .post-caption::-webkit-scrollbar-track { background: transparent; }
+        .post-caption::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+
+        .post-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--neon-blue);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .post-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Anime AI Engine</h1>
+            <div class="status">
+                <div class="status-indicator"></div>
+                System Active
+            </div>
+        </header>
+
+        <div class="glass-panel control-panel">
+            <div>
+                <h2>Dashboard Control</h2>
+                <p style="color: var(--text-muted);">Manually trigger the viral AI automation pipeline.</p>
+            </div>
+            <div>
+                <button class="btn-run" onclick="runEngine()" id="runBtn">Run AI Engine</button>
+                <div class="loader" id="loader">⚙️ Engine is analyzing trends...</div>
+            </div>
+        </div>
+
+        <div class="glass-panel">
+            <h2>Viral Content Gallery</h2>
+            <div class="gallery" id="gallery">
+                <!-- Posts injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadPosts() {
+            try {
+                const response = await fetch('/posts');
+                const posts = await response.json();
+                const gallery = document.getElementById('gallery');
+                gallery.innerHTML = '';
+                
+                if (posts.length === 0) {
+                    gallery.innerHTML = '<p style="color: var(--text-muted);">No posts found. Click "Run AI Engine" to generate viral content.</p>';
+                    return;
+                }
+
+                posts.reverse().forEach((post, index) => {
+                    const imageIndex = posts.length - index; 
+                    
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    card.innerHTML = `
+                        <img src="/images/post_${imageIndex}.jpg" alt="Poster" class="post-image" onerror="this.src='https://via.placeholder.com/1080x1080/1a1a2e/00e5ff?text=Processing...'">
+                        <div class="post-content">
+                            <div class="post-title">${post.title}</div>
+                            <div class="post-caption">${post.caption}</div>
+                            <a href="${post.link}" target="_blank" class="post-link">View Source News →</a>
+                        </div>
+                    `;
+                    gallery.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        }
+
+        async function runEngine() {
+            const btn = document.getElementById('runBtn');
+            const loader = document.getElementById('loader');
+            
+            btn.style.display = 'none';
+            loader.style.display = 'block';
+            
+            try {
+                const response = await fetch('/run', { method: 'POST' });
+                const result = await response.json();
+                if(result.status === 'success') {
+                    loadPosts();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                alert('Connection error while running engine.');
+            }
+            
+            btn.style.display = 'inline-block';
+            loader.style.display = 'none';
+        }
+
+        // Initial load
+        loadPosts();
+    </script>
+</body>
+</html>
