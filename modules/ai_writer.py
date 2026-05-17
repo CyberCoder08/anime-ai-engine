@@ -1,35 +1,18 @@
 from google import genai
-import config
+import os
 
-client = genai.Client(api_key=config.GEMINI_API_KEY)
+API_KEY = os.getenv("GEMINI_API_KEY")
 
-def generate_anime_caption(title, summary):
-    print(f"Generating AI caption for: {title}")
+client = genai.Client(api_key=API_KEY)
 
-    prompt = f"""
-Rewrite this anime news into a viral Instagram caption.
-
-Rules:
-- exciting anime fandom tone
-- Gen-Z style
-- emotional hype
-- include emojis
-- include hashtags
-
-Title:
-{title}
-
-Summary:
-{summary}
-"""
-
+def generate_anime_caption(topic):
     try:
         response = client.models.generate_content(
             model="gemini-2.0-flash",
-            contents=prompt
+            contents=f"Write a short viral anime Instagram caption about: {topic}"
         )
 
         return response.text
 
     except Exception as e:
-        return f"AI Error: {e}"
+        return f"AI Error: {str(e)}"
