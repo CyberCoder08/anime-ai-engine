@@ -56,6 +56,10 @@ def process_news():
                 print(f"⚠️ Poster generation failed\n")
             
             print("-" * 50 + "\n")
+            
+            # Process ONLY the first trending news article per run
+            break
+            
         except Exception as e:
             print(f"⚠️ Failed to process news {i}: {e}\n")
             print("-" * 50 + "\n")
